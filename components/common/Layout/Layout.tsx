@@ -63,7 +63,7 @@ const Layout: FC<Props> = ({
       <div className={cn(s.root)}>
         <Navbar />
         <main className="fit">{children}</main>
-        <Footer pages={pageProps.pages} />
+        <Footer />
 
         <Modal open={displayModal} onClose={closeModal}>
           {modalView === 'LOGIN_VIEW' && <LoginView />}
