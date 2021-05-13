@@ -1,6 +1,8 @@
 import { Layout } from '@components/common'
 import { Grid, Marquee, Hero } from '@components/ui'
 import { ProductCard } from '@components/product'
+import HeroHome from '@components/home/HeroHome'
+import Announcements from '@components/home/Announcements'
 // import HomeAllProductsGrid from '@components/common/HomeAllProductsGrid'
 import type { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 
@@ -42,6 +44,8 @@ export default function Home({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <>
+      <HeroHome></HeroHome>
+      <Announcements></Announcements>
       <Grid>
         {products.slice(0, 3).map((product, i) => (
           <ProductCard
