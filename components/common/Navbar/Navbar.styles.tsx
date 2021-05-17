@@ -2,12 +2,13 @@ import styled from 'styled-components'
 
 export const _Navbar = styled.div`
   #promo-container {
-    width: 100%;
+    max-width: 1400px;
     height: 46px;
     background: #ff6c0e;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: auto;
 
     #promo-label {
       font-size: 14px;
