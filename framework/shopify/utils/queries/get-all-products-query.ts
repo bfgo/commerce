@@ -9,6 +9,18 @@ edges {
     title
     vendor
     handle
+    collections(first: 10){
+      pageInfo{
+        hasNextPage
+        hasPreviousPage
+      }
+      edges{
+        node{
+          id
+          title
+        }
+      }
+    }
     description
     descriptionHtml
     availableForSale
@@ -18,7 +30,7 @@ edges {
         currencyCode
       }
     }
-    images(first: 1) {
+    images(first: 5) {
       pageInfo {
         hasNextPage
         hasPreviousPage
@@ -48,7 +60,7 @@ products(
 
 const getAllProductsQuery = /* GraphQL */ `
   query getAllProducts(
-    $first: Int = 250
+    $first: Int = 500
     $query: String = "available_for_sale:true"
     $sortKey: ProductSortKeys = RELEVANCE
     $reverse: Boolean = false

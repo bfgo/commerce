@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&display=swap');
 
 :root {
-  --primary: #ffffff;
-  --primary-2: #f1f3f5;
-  --secondary: #000000;
-  --secondary-2: #111;
+  --primary: #ffffff !important;
+  --primary-2: #f1f3f5!important;
+  --secondary: #000000!important;
+  --secondary-2: #111!important;
   --selection: var(--cyan);
 
-  --text-base: #000000;
-  --text-primary: #000000;
-  --text-secondary: white;
+  --text-base: #000000!important;
+  --text-primary: #000000!important;
+  --text-secondary: white!important;
 
   --hover: rgba(0, 0, 0, 0.075);
   --hover-1: rgba(0, 0, 0, 0.15);

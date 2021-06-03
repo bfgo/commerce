@@ -3,6 +3,7 @@ import { Grid, Marquee, Hero } from '@components/ui'
 import { ProductCard } from '@components/product'
 import HeroHome from '@components/home/HeroHome'
 import Announcements from '@components/home/Announcements'
+import Eligelo from '@components/home/Eligelo/Eligelo'
 // import HomeAllProductsGrid from '@components/common/HomeAllProductsGrid'
 import type { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 
@@ -18,7 +19,7 @@ export async function getStaticProps({
   const config = getConfig({ locale })
 
   const { products } = await getAllProducts({
-    variables: { first: 12 },
+    variables: { first: 18 },
     config,
     preview,
   })
@@ -46,6 +47,7 @@ export default function Home({
     <>
       <HeroHome></HeroHome>
       <Announcements></Announcements>
+      <Eligelo></Eligelo>
       <Grid>
         {products.slice(0, 3).map((product, i) => (
           <ProductCard

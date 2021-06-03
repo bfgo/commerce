@@ -1,5 +1,5 @@
 const getAllProductsPathsQuery = /* GraphQL */ `
-  query getAllProductPaths($first: Int = 250, $cursor: String) {
+  query getAllProductPaths($first: Int = 500, $cursor: String) {
     products(first: $first, after: $cursor) {
       pageInfo {
         hasNextPage
