@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { FC, useState, useEffect, useContext } from 'react'
 import { _Navbar } from './Navbar.styles'
 
-const Navbar = () => {
+const Navbar: FC = () => {
   let changeMenuState = (state: any, id: any) => {
     document.getElementById(id)!.style.display = state
   }
