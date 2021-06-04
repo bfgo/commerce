@@ -5,7 +5,7 @@ import { FC, useEffect, useState } from 'react'
 import s from './ProductView.module.css'
 import { Swatch, ProductSlider } from '@components/product'
 import { Button, Container, Text, useUI } from '@components/ui'
-import type { Product } from '@commerce/types'
+import type { Product } from '@commerce/types/product'
 import usePrice from '@framework/product/use-price'
 import { useAddItem } from '@framework/cart'
 import { getVariant, SelectedOptions } from '../helpers'
@@ -18,6 +18,8 @@ interface Props {
 }
 
 const ProductView: FC<Props> = ({ product }) => {
+  // TODO: fix this missing argument issue
+  /* @ts-ignore */
   const addItem = useAddItem()
   const { price } = usePrice({
     amount: product.price.value,
@@ -124,7 +126,8 @@ const ProductView: FC<Props> = ({ product }) => {
                           setChoices((choices) => {
                             return {
                               ...choices,
-                              [opt.displayName.toLowerCase()]: v.label.toLowerCase(),
+                              [opt.displayName.toLowerCase()]:
+                                v.label.toLowerCase(),
                             }
                           })
                         }}
@@ -136,7 +139,7 @@ const ProductView: FC<Props> = ({ product }) => {
             ))}
 
             <div className="pb-14 break-words w-full max-w-xl">
-              <Text html={product.descriptionHtml ?? product.description} />
+              <Text html={product.descriptionHtml || product.description} />
             </div>
           </section>
           <div>
@@ -148,9 +151,8 @@ const ProductView: FC<Props> = ({ product }) => {
               loading={loading}
               disabled={variant?.availableForSale === false}
             >
-              {variant?.isInStock === false &&
-              variant?.availableForSale === false
-                ? 'Out Of Stock'
+              {variant?.availableForSale === false
+                ? 'Not Available'
                 : 'Add To Cart'}
             </Button>
           </div>
