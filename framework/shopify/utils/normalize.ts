@@ -1,3 +1,8 @@
+import type { Page } from '../types/page'
+import type { Product } from '../types/product'
+import type { Cart, LineItem } from '../types/cart'
+import type { Category } from '../types/site'
+
 import {
   Product as ShopifyProduct,
   Checkout,
@@ -7,9 +12,11 @@ import {
   ProductVariantConnection,
   MoneyV2,
   ProductOption,
+  Page as ShopifyPage,
+  PageEdge,
+  Collection,
 } from '../schema'
-
-import type { Cart, LineItem, Product } from '../types'
+import { colorMap } from '@lib/colors'
 
 const money = ({ amount, currencyCode }: MoneyV2) => {
   return {
@@ -26,15 +33,18 @@ const normalizeProductOption = ({
   return {
     __typename: 'MultipleChoiceOption',
     id,
-    displayName,
+    displayName: displayName.toLowerCase(),
     values: values.map((value) => {
       let output: any = {
         label: value,
       }
       if (displayName.match(/colou?r/gi)) {
-        output = {
-          ...output,
-          hexColors: [value],
+        const mapedColor = colorMap[value.toLowerCase().replace(/ /g, '')]
+        if (mapedColor) {
+          output = {
+            ...output,
+            hexColors: [mapedColor],
+          }
         }
       }
       return output
@@ -53,25 +63,23 @@ const normalizeProductVariants = ({ edges }: ProductVariantConnection) => {
     ({
       node: {
         id,
-        title,
+        selectedOptions,
         sku,
+        title,
         priceV2,
         compareAtPriceV2,
-        selectedOptions,
         requiresShipping,
         availableForSale,
-        quantityAvailable,
       },
     }) => {
       return {
         id,
         name: title,
-        sku: sku ?? '',
+        sku: sku ?? id,
         price: +priceV2.amount,
         listPrice: +compareAtPriceV2?.amount,
         requiresShipping,
         availableForSale,
-        isInStock: Boolean(Number(quantityAvailable) > 0),
         options: selectedOptions.map(({ name, value }: SelectedOption) => {
           const options = normalizeProductOption({
             id,
@@ -85,27 +93,24 @@ const normalizeProductVariants = ({ edges }: ProductVariantConnection) => {
   )
 }
 
-export function normalizeProduct(productNode: ShopifyProduct): Product {
-  const {
-    id,
-    title: name,
-    vendor,
-    images,
-    variants,
-    description,
-    descriptionHtml,
-    handle,
-    priceRange,
-    options,
-    ...rest
-  } = productNode
-
-  const product = {
+export function normalizeProduct({
+  id,
+  title: name,
+  vendor,
+  images,
+  variants,
+  description,
+  descriptionHtml,
+  handle,
+  priceRange,
+  options,
+  metafields,
+  ...rest
+}: ShopifyProduct): Product {
+  return {
     id,
     name,
     vendor,
-    description,
-    descriptionHtml,
     path: `/${handle}`,
     slug: handle?.replace(/^\/+|\/+$/g, ''),
     price: money(priceRange?.minVariantPrice),
@@ -116,15 +121,16 @@ export function normalizeProduct(productNode: ShopifyProduct): Product {
           .filter((o) => o.name !== 'Title') // By default Shopify adds a 'Title' name when there's only one option. We don't need it. https://community.shopify.com/c/Shopify-APIs-SDKs/Adding-new-product-variant-is-automatically-adding-quot-Default/td-p/358095
           .map((o) => normalizeProductOption(o))
       : [],
+    ...(description && { description }),
+    ...(descriptionHtml && { descriptionHtml }),
     ...rest,
   }
-
-  return product
 }
 
 export function normalizeCart(checkout: Checkout): Cart {
   return {
     id: checkout.id,
+    url: checkout.webUrl,
     customerId: '',
     email: '',
     createdAt: checkout.createdAt,
@@ -154,7 +160,7 @@ function normalizeLineItem({
       sku: variant?.sku ?? '',
       name: variant?.title!,
       image: {
-        url: variant?.image?.originalSrc ?? '/product-img-placeholder.svg',
+        url: variant?.image?.originalSrc || '/product-img-placeholder.svg',
       },
       requiresShipping: variant?.requiresShipping ?? false,
       price: variant?.priceV2?.amount,
@@ -162,14 +168,29 @@ function normalizeLineItem({
     },
     path: String(variant?.product?.handle),
     discounts: [],
-    options:
-      // By default Shopify adds a default variant with default names, we're removing it. https://community.shopify.com/c/Shopify-APIs-SDKs/Adding-new-product-variant-is-automatically-adding-quot-Default/td-p/358095
-      variant?.title == 'Default Title'
-        ? []
-        : [
-            {
-              value: variant?.title,
-            },
-          ],
+    options: variant?.title == 'Default Title' ? [] : variant?.selectedOptions,
   }
 }
+
+export const normalizePage = (
+  { title: name, handle, ...page }: ShopifyPage,
+  locale: string
+): Page => ({
+  ...page,
+  url: `/${locale}/${handle}`,
+  name,
+})
+
+export const normalizePages = (edges: PageEdge[], locale: string): Page[] =>
+  edges?.map((edge) => normalizePage(edge.node, locale))
+
+export const normalizeCategory = ({
+  title: name,
+  handle,
+  id,
+}: Collection): Category => ({
+  id,
+  name,
+  slug: handle,
+  path: `/${handle}`,
+})
