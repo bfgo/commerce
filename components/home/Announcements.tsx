@@ -8,7 +8,6 @@ import {
   AnnouncementSecondaryText,
   AnnouncementTextContainer,
   Container,
-  HorizontalLine,
   ResponsiveLine,
 } from './Announcements.styles'
 

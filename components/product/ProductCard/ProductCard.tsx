@@ -1,10 +1,24 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 import cn from 'classnames'
 import Link from 'next/link'
 import type { Product } from '@commerce/types/product'
 import s from './ProductCard.module.css'
 import Image, { ImageProps } from 'next/image'
 import WishlistButton from '@components/wishlist/WishlistButton'
+import {
+  ProductCardCont,
+  ImageContainer,
+  ImageProduct,
+  ProductInfoContainer,
+  CollectionTitle,
+  CollectionLine,
+  Info,
+  ProductDetail,
+  ProductIcon,
+  ProducTitle,
+  Price,
+} from './ProductCard.style'
+import product from 'next-seo/lib/jsonld/product'
 
 interface Props {
   className?: string
@@ -45,8 +59,42 @@ const ProductCard: FC<Props> = ({
         </div>
       ) : (
         <>
-          <div className={s.squareBg} />
-          <div className="flex flex-row justify-between box-border w-full z-20 absolute">
+          <ProductCardCont>
+            <ImageContainer>
+              {product?.images && (
+                <ImageProduct
+                  alt={product.name || 'Product Image'}
+                  className={s.productImage}
+                  src={product.images[0]?.url || placeholderImg}
+                  height={340}
+                  width={340}
+                  quality="85"
+                  {...imgProps}
+                />
+              )}
+            </ImageContainer>
+            <ProductInfoContainer>
+              {product?.collections && (
+                <CollectionTitle>
+                  {product.collections.edges[1].node.title}
+                </CollectionTitle>
+              )}
+              <CollectionLine></CollectionLine>
+              <Info>
+                <ProductDetail>
+                  <ProducTitle>{product.name}</ProducTitle>
+                  <Price>
+                    {product.price.value}
+                    &nbsp;
+                    {product.price.currencyCode}
+                  </Price>
+                </ProductDetail>
+                <ProductIcon></ProductIcon>
+              </Info>
+            </ProductInfoContainer>
+          </ProductCardCont>
+          {/* <div className={s.squareBg} /> */}
+          {/* <div className="flex flex-row justify-between box-border w-full z-20 absolute">
             <div className="absolute top-0 left-0 pr-16 max-w-full">
               <h3 className={s.productTitle}>
                 <span>{product.name}</span>
@@ -78,7 +126,7 @@ const ProductCard: FC<Props> = ({
                 {...imgProps}
               />
             )}
-          </div>
+          </div> */}
         </>
       )}
     </a>

@@ -754,7 +754,7 @@ export enum CheckoutErrorCode {
   Invalid = 'INVALID',
   /** Input value is too long. */
   TooLong = 'TOO_LONG',
-  /** Input value is not present. */
+  /** Input value must be blank. */
   Present = 'PRESENT',
   /** Input value should be less than maximum allowed value. */
   LessThan = 'LESS_THAN',
@@ -2635,7 +2635,7 @@ export type FulfillmentTrackingInfo = {
 
 /** Represents information about the metafields associated to the specified resource. */
 export type HasMetafields = {
-  /** The metafield associated with the resource. */
+  /** Returns a metafield found by namespace and key. */
   metafield?: Maybe<Metafield>
   /** A paginated list of metafields associated with the resource. */
   metafields: MetafieldConnection
@@ -3908,7 +3908,7 @@ export type Product = Node &
     images: ImageConnection
     /** The media associated with the product. */
     media: MediaConnection
-    /** The metafield associated with the resource. */
+    /** Returns a metafield found by namespace and key. */
     metafield?: Maybe<Metafield>
     /** A paginated list of metafields associated with the resource. */
     metafields: MetafieldConnection
@@ -4235,7 +4235,7 @@ export type ProductVariant = Node &
     id: Scalars['ID']
     /** Image associated with the product variant. This field falls back to the product image if no image is available. */
     image?: Maybe<Image>
-    /** The metafield associated with the resource. */
+    /** Returns a metafield found by namespace and key. */
     metafield?: Maybe<Metafield>
     /** A paginated list of metafields associated with the resource. */
     metafields: MetafieldConnection
@@ -5276,6 +5276,19 @@ export type ProductConnectionFragment = { __typename?: 'ProductConnection' } & {
         Product,
         'id' | 'title' | 'vendor' | 'handle'
       > & {
+          collections: { __typename?: 'CollectionConnection' } & {
+            edges: Array<
+              { __typename?: 'CollectionEdge' } & Pick<
+                CollectionEdge,
+                'cursor'
+              > & {
+                  node: { __typename?: 'Collection' } & Pick<
+                    Collection,
+                    'title'
+                  >
+                }
+            >
+          }
           priceRange: { __typename?: 'ProductPriceRange' } & {
             minVariantPrice: { __typename?: 'MoneyV2' } & Pick<
               MoneyV2,
@@ -5344,6 +5357,12 @@ export type CheckoutDetailsFragment = { __typename?: 'Checkout' } & Pick<
                   ProductVariant,
                   'id' | 'sku' | 'title'
                 > & {
+                    selectedOptions: Array<
+                      { __typename?: 'SelectedOption' } & Pick<
+                        SelectedOption,
+                        'name' | 'value'
+                      >
+                    >
                     image?: Maybe<
                       { __typename?: 'Image' } & Pick<
                         Image,
@@ -5508,6 +5527,7 @@ export type GetProductBySlugQuery = { __typename?: 'QueryRoot' } & {
       Product,
       | 'id'
       | 'handle'
+      | 'availableForSale'
       | 'title'
       | 'productType'
       | 'vendor'
@@ -5539,7 +5559,7 @@ export type GetProductBySlugQuery = { __typename?: 'QueryRoot' } & {
             { __typename?: 'ProductVariantEdge' } & {
               node: { __typename?: 'ProductVariant' } & Pick<
                 ProductVariant,
-                'id' | 'title' | 'sku'
+                'id' | 'title' | 'sku' | 'availableForSale' | 'requiresShipping'
               > & {
                   selectedOptions: Array<
                     { __typename?: 'SelectedOption' } & Pick<

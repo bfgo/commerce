@@ -11,7 +11,7 @@ interface Props {
 
 const Grid: FC<Props> = ({
   className,
-  layout = 'A',
+  layout = 'normal',
   children,
   variant = 'default',
 }) => {

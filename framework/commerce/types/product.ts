@@ -1,3 +1,14 @@
+export type ProductColections = {
+  edges: CollectionOption[]
+}
+
+export type CollectionOption = {
+  cursor: string
+  node: {
+    title: string
+  }
+}
+
 export type ProductImage = {
   url: string
   alt?: string
@@ -32,6 +43,7 @@ export type ProductVariant = {
 }
 
 export type Product = {
+  collections: ProductColections
   id: string
   name: string
   description: string

@@ -8,6 +8,14 @@ export const productConnectionFragment = /* GraphQL */ `
       node {
         id
         title
+        collections(first: 3) {
+          edges {
+            cursor
+            node {
+              title
+            }
+          }
+        }
         vendor
         handle
         priceRange {
